@@ -8,6 +8,8 @@ import path from 'path';
 import webpack from 'webpack';
 import merge from 'lodash.merge';
 
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+
 const DEBUG = !process.argv.includes('release');
 const VERBOSE = process.argv.includes('verbose');
 const WATCH = global.watch;
@@ -106,6 +108,9 @@ const appConfig = merge({}, config, {
   plugins: [
     ...config.plugins,
     ...(DEBUG ? [] : [
+      new ExtractTextPlugin('main.css', {
+        allChunks: true
+      }),
       new webpack.optimize.DedupePlugin(),
       new webpack.optimize.UglifyJsPlugin({
         compress: {
@@ -145,7 +150,7 @@ const appConfig = merge({}, config, {
       ...config.module.loaders,
       {
         test: /\.scss$/,
-        loaders: ['style-loader', 'css-loader', 'postcss-loader'],
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!postcss-loader'),
       },
     ],
   },
