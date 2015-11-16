@@ -148,9 +148,13 @@ const appConfig = merge({}, config, {
         },
       }) : JS_LOADER,
       ...config.module.loaders,
-      {
+      DEBUG ? {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!postcss-loader'),
+        loaders:  ['style-loader', 'css-loader', 'postcss-loader']
+      } : {
+        // only create main.css file in production build since it breaks hot reloading during development
+        test: /\.scss$/,
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!postcss-loader')
       },
     ],
   },
